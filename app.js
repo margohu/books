@@ -1,18 +1,86 @@
 // event elements
 const form = document.querySelector('form');
-const taskList = document.querySelector('#books-list');
+const booksList = document.querySelector('#books-list');
 
 // events
 form.addEventListener('submit', addBook);
-taskList.addEventListener('click', deleteBook);
-deleteTasksBtn.addEventListener('click', deleteTasks);
+booksList.addEventListener('click', deleteBook);
+document.addEventListener('DOMContentLoaded', getBooksFromLocalStorage);
+
+function getBooksFromLocalStorage(){
+    let books;
+    if(localStorage.getItem('books') === null){
+        books = [];
+    } else {
+        books = JSON.parse(localStorage.getItem('books'));
+    }
+    for(let i = 0; i < books.length; i++){
+        let book = books[i];
+        // create <tr> element
+        const tr = document.createElement('tr');
+        for(let i = 0; i < book.length; i++){
+            // create <td> element
+            let td = document.createElement('td');
+            // create text element
+            let text = document.createTextNode(book[i]);
+            // add text to <td>
+            td.appendChild(text);
+            // add td to tr
+            tr.appendChild(td);// add td to tr
+            tr.appendChild(td);
+        }
+        // X link
+        // create <td> element
+        td = document.createElement('td');
+        // create <a> element
+        const link = document.createElement('a');
+        // set href atribute to <a>
+        link.setAttribute('href', '#');
+        // add text content to <a>
+        link.appendChild(document.createTextNode('X'));
+        // add <a> to <li>
+        td.appendChild(link);
+        // add td to tr
+        tr.appendChild(td);
+        // add tr to tbody
+        booksList.appendChild(tr);
+    }
+}
 
 function deleteBook(event){
     if(event.target.textContent === 'X'){
-        if(confirm('Do you want to delete this task?')){
-            event.target.parentElement.remove();
+        if(confirm('Do you want to delete this book?')){
+            event.target.parentElement.parentElement.remove();
+            //let bookTitle = event.target.parentElement.parentElement.firstChild.textContent;
+            let bookISBN = event.target.parentElement.previousElementSibling.textContent;
+            deleteBookFromLocalStorage(bookISBN);
         }
     }
+}
+
+function deleteBookFromLocalStorage(bookISBN){
+    let books;
+    if(localStorage.getItem('books') === null){
+        books = [];
+    } else {
+        books = JSON.parse(localStorage.getItem('books'));
+    }
+    /*
+    for(let i = 0; i < books.length; i++){
+        let book = books[i];
+        if(book[2] === bookISBN){
+            books.splice(i, 1);
+        }
+    }
+    */
+
+    books.forEach(function (book, index){
+        if(book[2] === bookISBN){
+            books.splice(index, 1);
+        }
+    });
+
+    localStorage.setItem('books', JSON.stringify(books));
 }
 
 function addBook(event){
@@ -25,70 +93,51 @@ function addBook(event){
     let author = authorInput.value;
     let isbn = isbnInput.value;
 
-    //create book
+    // create book
     const book = [title, author, isbn]
     // create <tr> element
     const tr = document.createElement('tr');
-    for(let 1 =0; 1 < book.lenght;i++){
+    for(let i = 0; i < book.length; i++){
+        // create <td> element
         let td = document.createElement('td');
-        let text = document.createTextNode(book[1]);
+        // create text element
+        let text = document.createTextNode(book[i]);
+        // add text to <td>
+        td.appendChild(text);
+        // add td to tr
+        tr.appendChild(td);// add td to tr
+        tr.appendChild(td);
     }
-    //title
+    // X link
     // create <td> element
-    let td = document.createElement('td');
-    //create text element
-    let text = document.createTextNode(title);
-    //add text to <td>
-    td.appendChild(td);
-
-    //author
-    // create <td> element
-    let td = document.createElement('td');
-    //create text element
-    let text = document.createTextNode(author);
-    //add text to <td>
-    td.appendChild(td);
-
-    //isbn
-    // create <td> element
-    let td = document.createElement('td');
-    //create text element
-    let text = document.createTextNode(isbn);
-    //add text to <td>
-    td.appendChild(td);
-
-    //X-link
-
-
-
-
-
-    //save book
-    addBookToLocalStorage(book);
-    
-
-
-
-
-    // add css class
-    li.className = 'collection-item';
-    // create text element
-    const text = document.createTextNode(task);
-    // add text to <li>
-    li.appendChild(text);
+    td = document.createElement('td');
     // create <a> element
     const link = document.createElement('a');
-    // add css class
-    link.className = 'secondary-content';
     // set href atribute to <a>
     link.setAttribute('href', '#');
     // add text content to <a>
     link.appendChild(document.createTextNode('X'));
-    // add <a> to <li> Yeeesh
-    li.appendChild(link);
-    // add li to ul
-    const ul = document.querySelector('.collection');
-    ul.appendChild(li);
-    taskInput.value = "";
+    // add <a> to <li>
+    td.appendChild(link);
+    // add td to tr
+    tr.appendChild(td);
+    // add tr to tbody
+    booksList.appendChild(tr);
+    // save book
+    addBookToLocalStorage(book);
+    titleInput.value = '';
+    authorInput.value = '';
+    isbnInput.value = '';
     event.preventDefault();
+}
+
+function addBookToLocalStorage(book){
+    let books;
+    if(localStorage.getItem('books') === null){
+        books = [];
+    } else {
+        books = JSON.parse(localStorage.getItem('books'));
+    }
+    books.push(book);
+    localStorage.setItem('books', JSON.stringify(books));
 }
